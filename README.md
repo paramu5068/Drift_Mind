@@ -1,4 +1,4 @@
-# drift_mind
+# Drift_Mind
 
 A new Flutter project.
 
