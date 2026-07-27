@@ -119,7 +119,7 @@ def write_reports(tests):
     pass_rate = round((passed / total) * 100, 2)
     duration = round(df["Execution Time"].sum(), 2)
     
-    with open(f"{SUMMARY_DIR}/summary.md", "w") as f:
+    with open(f"{SUMMARY_DIR}/summary.md", "w", encoding="utf-8") as f:
         f.write(f"# Live GitHub Pages E2E Execution Summary\n\n")
         f.write(f"Deployment URL: {BASE_URL}\n")
         f.write(f"Execution Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
@@ -134,7 +134,7 @@ def write_reports(tests):
         f.write(f"Execution Duration: {duration}s\n\n")
         f.write(f"Artifacts Generated:\n✓ Excel Reports\n✓ HTML Reports\n✓ Screenshots\n✓ Logs\n✓ JSON Results\n")
         
-    with open(f"{HTML_DIR}/dashboard.html", "w") as f:
+    with open(f"{HTML_DIR}/dashboard.html", "w", encoding="utf-8") as f:
         f.write(f"<html><body><h1>Test Dashboard</h1><p>Pass Rate: {pass_rate}%</p></body></html>")
 
 def main():
