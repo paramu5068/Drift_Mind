@@ -1,0 +1,114 @@
+name: Complete CI/CD Deployment + Live E2E Testing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  BASE_URL: "https://paramu5068.github.io/Drift_Mind/"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          
+      - name: Install Dependencies
+        run: flutter pub get
+        working-directory: ./
+
+      - name: Build Web Application
+        run: flutter build web --release --base-href /Drift_Mind/
+        working-directory: ./
+
+      - name: Upload Web Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './build/web'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        
+  verify-and-test:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Wait for Deployment Availability
+        run: |
+          echo "Waiting for $BASE_URL to be live..."
+          for i in {1..12}; do
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" "$BASE_URL")
+            if [ "$STATUS" -eq 200 ] || [ "$STATUS" -eq 301 ] || [ "$STATUS" -eq 302 ]; then
+              echo "Deployment is live! Status: $STATUS"
+              exit 0
+            fi
+            echo "Attempt $i: Not live yet (Status: $STATUS). Retrying in 10s..."
+            sleep 10
+          done
+          echo "Deployment verification failed!"
+          exit 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Testing Dependencies
+        run: |
+          cd automation
+          pip install -r requirements.txt
+          playwright install chromium
+
+      - name: Run E2E Tests
+        run: |
+          cd automation
+          python runner.py
+        env:
+          BASE_URL: ${{ env.BASE_URL }}
+        continue-on-error: true
+        id: test-run
+
+      - name: Check pass percentage
+        run: |
+          cd automation
+          python verify_results.py
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: E2E-Test-Results
+          path: automation/Test Results/
+          retention-days: 30
+
+      - name: Publish Summary
+        if: always()
+        run: |
+          cat "automation/Test Results/Summary/summary.md" >> $GITHUB_STEP_SUMMARY
