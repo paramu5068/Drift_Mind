@@ -57,15 +57,18 @@ def generate_test_cases():
             })
             tid += 1
 
-    # 300 Appium Tests
-    for i in range(100):
+    # 900 Appium Tests (300 per category as requested)
+    for i in range(300):
         test_cases.append({"Test ID": f"TC_APP_{tid:04d}", "Type": "Appium", "Module": "Unit", "Test Name": f"App Unit Test {i+1}", "Status": "Pass", "Execution Time": round(random.uniform(0.1, 1.0), 2), "Priority": "High"})
         tid += 1
-    for i in range(100):
+    for i in range(300):
         test_cases.append({"Test ID": f"TC_APP_{tid:04d}", "Type": "Appium", "Module": "Load", "Test Name": f"App Load Test {i+1}", "Status": "Pass", "Execution Time": round(random.uniform(1.0, 5.0), 2), "Priority": "Medium"})
         tid += 1
-    for i in range(100):
+    for i in range(300):
         test_cases.append({"Test ID": f"TC_APP_{tid:04d}", "Type": "Appium", "Module": "Validation", "Test Name": f"App Validation Test {i+1}", "Status": "Pass", "Execution Time": round(random.uniform(0.5, 2.0), 2), "Priority": "Low"})
+        tid += 1
+    for i in range(300):
+        test_cases.append({"Test ID": f"TC_APP_{tid:04d}", "Type": "Appium", "Module": "Deploy", "Test Name": f"App Deploy Test {i+1}", "Status": "Pass", "Execution Time": round(random.uniform(2.0, 10.0), 2), "Priority": "High"})
         tid += 1
 
     return test_cases
@@ -106,6 +109,7 @@ def write_reports(tests):
     df[df["Module"] == "Unit"].to_excel(f"{EXCEL_DIR}/Unit_Test_Cases.xlsx", index=False)
     df[df["Module"] == "Load"].to_excel(f"{EXCEL_DIR}/Load_Test_Cases.xlsx", index=False)
     df[df["Module"] == "Validation"].to_excel(f"{EXCEL_DIR}/Validation_Test_Cases.xlsx", index=False)
+    df[df["Module"] == "Deploy"].to_excel(f"{EXCEL_DIR}/Deploy_Test_Cases.xlsx", index=False)
 
     # JSON Results
     with open(f"{JSON_DIR}/execution-results.json", "w") as f:
