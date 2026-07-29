@@ -26,31 +26,31 @@ jobs:
     name: 📱 Appium — Android Tests (350)
     runs-on: ubuntu-latest
     steps:
-      - run: sleep 16
+      - run: sleep 19
 
   unit_tests:
     name: 🧪 Unit Tests — API (350)
     runs-on: ubuntu-latest
     steps:
-      - run: sleep 21
+      - run: sleep 25
 
   validation_tests:
     name: ✅ Validation Tests (350)
     runs-on: ubuntu-latest
     steps:
-      - run: sleep 19
+      - run: sleep 22
 
   deployment_status:
     name: 🚀 Deployment Status (350)
     runs-on: ubuntu-latest
     steps:
-      - run: sleep 15
+      - run: sleep 17
 
   load_testing:
     name: 📈 Load Testing — Performance (350)
     runs-on: ubuntu-latest
     steps:
-      - run: sleep 17
+      - run: sleep 21
 
   compile_and_deploy:
     name: 📊 Compile Master Report & Deploy
