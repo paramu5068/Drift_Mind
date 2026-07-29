@@ -54,9 +54,19 @@ class FirebaseSyncService {
       final appStats = await _usageService.getDailyUsageStats();
       
       final Map<String, int> appUsageMap = {};
+      int calculatedTotalMs = 0;
       for (var app in appStats) {
-        appUsageMap[app.packageName.replaceAll('.', '_')] = app.totalTimeVisible.inMilliseconds;
+        final ms = app.totalTimeVisible.inMilliseconds;
+        appUsageMap[app.packageName.replaceAll('.', '_')] = ms;
+        calculatedTotalMs += ms;
       }
+
+      final int finalTotalScreenTimeMs = calculatedTotalMs > 0 ? calculatedTotalMs : totalSOT.inMilliseconds;
+
+      final unlockCount = await _usageService.getUnlockCount();
+      final sleepStats = await _usageService.getSleepStats();
+      final int sleepMs = sleepStats?.duration.inMilliseconds ?? 0;
+      final double sleepHours = sleepStats != null ? (sleepStats.duration.inMinutes / 60.0) : 0.0;
 
       await _firestore
           .collection('users')
@@ -64,7 +74,10 @@ class FirebaseSyncService {
           .collection('metrics')
           .doc('daily')
           .set({
-        'totalScreenTimeMs': totalSOT.inMilliseconds,
+        'totalScreenTimeMs': finalTotalScreenTimeMs,
+        'unlockCount': unlockCount,
+        'sleepMs': sleepMs,
+        'sleepHours': sleepHours,
         'appUsage': appUsageMap,
         'lastUpdated': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));

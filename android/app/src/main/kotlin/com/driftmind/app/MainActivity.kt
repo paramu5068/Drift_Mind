@@ -20,10 +20,17 @@ class MainActivity: FlutterActivity() {
                     startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
                     result.success(null)
                 }
-                "getTotalScreenTime" -> result.success(helper.getTotalScreenTime(
-                    call.argument<Long>("startTime") ?: 0L,
-                    call.argument<Long>("endTime") ?: System.currentTimeMillis()
-                ))
+                "getTotalScreenTime" -> {
+                    val cal = java.util.Calendar.getInstance()
+                    cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
+                    cal.set(java.util.Calendar.MINUTE, 0)
+                    cal.set(java.util.Calendar.SECOND, 0)
+                    cal.set(java.util.Calendar.MILLISECOND, 0)
+                    val todayStart = cal.timeInMillis
+                    val startTime = call.argument<Long>("startTime") ?: todayStart
+                    val endTime = call.argument<Long>("endTime") ?: System.currentTimeMillis()
+                    result.success(helper.getTotalScreenTime(startTime, endTime))
+                }
                 "getDailyUsageStats" -> result.success(helper.getDailyUsageStats())
                 "getWeeklyUsage" -> result.success(helper.getWeeklyUsage())
                 "getAppActivity" -> result.success(helper.getAppActivity(call.argument<String>("packageName") ?: ""))

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drift_Mind - AI Digital Wellbeing Admin Dashboard</title>
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="./css/styles.css">
+  <!-- ApexCharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Ambient Animated Background Mesh -->
+  <div class="bg-mesh">
+    <div class="mesh-ball mesh-ball-1"></div>
+    <div class="mesh-ball mesh-ball-2"></div>
+    <div class="mesh-ball mesh-ball-3"></div>
+  </div>
+
+  <div id="app-container">
+
+    <!-- Fixed Left Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="brand-logo">
+          <div class="brand-icon">
+            <i data-lucide="brain-circuit"></i>
+          </div>
+          <span class="brand-title">Drift_Mind</span>
+        </a>
+        <span class="brand-badge">AI v2.4</span>
+      </div>
+
+      <div class="sidebar-menu">
+        <div class="menu-category">Main Console</div>
+        <a href="#" class="nav-item active" data-view="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-view="users">
+          <i data-lucide="users"></i>
+          <span>User Management</span>
+        </a>
+
+        <div class="menu-category">Analytics Engine</div>
+        <a href="#" class="nav-item" data-view="screentime">
+          <i data-lucide="smartphone"></i>
+          <span>Screen Time</span>
+        </a>
+        <a href="#" class="nav-item" data-view="appusage">
+          <i data-lucide="grid"></i>
+          <span>App Usage</span>
+        </a>
+        <a href="#" class="nav-item" data-view="sleep">
+          <i data-lucide="moon"></i>
+          <span>Sleep Analytics</span>
+        </a>
+        <a href="#" class="nav-item" data-view="unlocks">
+          <i data-lucide="lock"></i>
+          <span>Unlock Analytics</span>
+        </a>
+        <a href="#" class="nav-item" data-view="notifications">
+          <i data-lucide="bell"></i>
+          <span>Notifications</span>
+        </a>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="ai-status-card">
+          <div class="ai-pulse-dot"></div>
+          <div class="ai-status-info">
+            <span class="ai-status-title">Firebase Sync</span>
+            <span class="ai-status-sub">driftmind-9ab16</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+
+      <!-- Top Navigation Bar -->
+      <header class="topnav">
+        <div class="topnav-left">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="text" id="globalSearchInput" class="search-input" placeholder="Search users, apps...">
+          </div>
+          <select class="date-filter-select">
+            <option value="today">Today (Live)</option>
+            <option value="7days" selected>Last 7 Days</option>
+            <option value="30days">Last 30 Days</option>
+            <option value="90days">Last 90 Days</option>
+          </select>
+        </div>
+
+        <div class="topnav-right">
+          <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme">
+            <i data-lucide="sun"></i>
+          </button>
+
+          <div class="admin-profile">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" class="admin-avatar" alt="Admin">
+            <div class="admin-info">
+              <span class="admin-name">Nasrin Admin</span>
+              <span class="admin-role">System Director</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Views -->
+      <div class="content-body">
+
+        <!-- 1. HOME DASHBOARD VIEW -->
+        <section id="view-dashboard" class="page-view active">
+          <div class="page-header">
+            <div class="header-title-group">
+              <h1>Digital Wellbeing Overview</h1>
+              <p>Real-time telemetry and Digital Wellbeing metrics powered by Firebase Firestore.</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn-primary" onclick="window.location.reload()"><i data-lucide="refresh-cw"></i> Sync Firebase</button>
+            </div>
+          </div>
+
+          <!-- KPI Cards Grid -->
+          <div class="kpi-grid">
+            <div class="glass-card kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-icon-box kpi-icon-indigo"><i data-lucide="users"></i></div>
+                <span class="kpi-trend trend-up">Active</span>
+              </div>
+              <div class="kpi-body">
+                <span class="kpi-value" id="kpi-total-users">--</span>
+                <span class="kpi-label">Total Users</span>
+              </div>
+            </div>
+
+            <div class="glass-card kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-icon-box kpi-icon-cyan"><i data-lucide="user-check"></i></div>
+                <span class="kpi-trend trend-up">Online</span>
+              </div>
+              <div class="kpi-body">
+                <span class="kpi-value" id="kpi-active-today">--</span>
+                <span class="kpi-label">Active Users Today</span>
+              </div>
+            </div>
+
+            <div class="glass-card kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-icon-box kpi-icon-purple"><i data-lucide="smartphone"></i></div>
+                <span class="kpi-trend trend-up">Daily Avg</span>
+              </div>
+              <div class="kpi-body">
+                <span class="kpi-value" id="kpi-avg-screentime">--</span>
+                <span class="kpi-label">Average Screen Time</span>
+              </div>
+            </div>
+
+            <div class="glass-card kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-icon-box kpi-icon-emerald"><i data-lucide="moon"></i></div>
+                <span class="kpi-trend trend-up">Rest Time</span>
+              </div>
+              <div class="kpi-body">
+                <span class="kpi-value" id="kpi-avg-sleep">--</span>
+                <span class="kpi-label">Avg Sleep Duration</span>
+              </div>
+            </div>
+
+            <div class="glass-card kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-icon-box kpi-icon-amber"><i data-lucide="lock"></i></div>
+                <span class="kpi-trend trend-up">Today</span>
+              </div>
+              <div class="kpi-body">
+                <span class="kpi-value" id="kpi-total-unlocks">--</span>
+                <span class="kpi-label">Device Unlocks</span>
+              </div>
+            </div>
+
+            <div class="glass-card kpi-card">
+              <div class="kpi-top">
+                <div class="kpi-icon-box kpi-icon-rose"><i data-lucide="bell"></i></div>
+                <span class="kpi-trend trend-up">Today</span>
+              </div>
+              <div class="kpi-body">
+                <span class="kpi-value" id="kpi-total-notifications">--</span>
+                <span class="kpi-label">Total Notifications</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="charts-grid-2">
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>User Growth Trajectory</h3>
+                  <p>Weekly active and registered user expansion</p>
+                </div>
+              </div>
+              <div id="userGrowthChart" class="chart-container"></div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Screen Time Trend (Hours)</h3>
+                  <p>Average daily device screen usage</p>
+                </div>
+              </div>
+              <div id="screenTimeTrendChart" class="chart-container"></div>
+            </div>
+          </div>
+
+          <div class="charts-grid-3">
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Sleep Duration</h3>
+                  <p>Nightly sleep hours</p>
+                </div>
+              </div>
+              <div id="sleepTrendChart" class="chart-container"></div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Phone Unlocks</h3>
+                  <p>Daily unlock frequency</p>
+                </div>
+              </div>
+              <div id="unlockTrendChart" class="chart-container"></div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Top Used Apps</h3>
+                  <p>Highest usage per category</p>
+                </div>
+              </div>
+              <div id="topAppsChart" class="chart-container"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. USER MANAGEMENT VIEW -->
+        <section id="view-users" class="page-view">
+          <div class="page-header">
+            <div class="header-title-group">
+              <h1>User Management Directory</h1>
+              <p>Manage registered Drift_Mind mobile users, risk profiles, and status controls.</p>
+            </div>
+            <div class="header-actions">
+              <select id="riskFilterSelect" class="date-filter-select">
+                <option value="all">All Risk Levels</option>
+                <option value="low">Low Risk</option>
+                <option value="medium">Medium Risk</option>
+                <option value="high">High Risk</option>
+              </select>
+              <select id="statusFilterSelect" class="date-filter-select">
+                <option value="all">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Suspended">Suspended</option>
+              </select>
+              <button class="btn-primary" id="exportUsersBtn"><i data-lucide="download"></i> Export CSV</button>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="table-container">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>User Profile</th>
+                    <th>Screen Time</th>
+                    <th>Sleep</th>
+                    <th>Unlocks</th>
+                    <th>Notifications</th>
+                    <th>AI Score</th>
+                    <th>Risk Level</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="userTableBody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; color: var(--text-secondary); font-size:0.85rem;">
+              <span id="tablePaginationInfo">Showing users...</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. SCREEN TIME ANALYTICS -->
+        <section id="view-screentime" class="page-view">
+          <div class="page-header">
+            <div class="header-title-group">
+              <h1>Screen Time Analytics</h1>
+              <p>In-depth device active screen metrics and hourly heatmaps.</p>
+            </div>
+          </div>
+
+          <div class="charts-grid-2">
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Current Week vs Previous Week</h3>
+                  <p>Screen time comparison in hours</p>
+                </div>
+              </div>
+              <div id="stWeeklyCompareChart" class="chart-container"></div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Screen Time Category Breakdown</h3>
+                  <p>Percentage split by app genre</p>
+                </div>
+              </div>
+              <div id="categoryBreakdownChart" class="chart-container"></div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>24-Hour Peak Usage Heatmap</h3>
+                <p>Activity intensity throughout the day (00:00 - 23:00)</p>
+              </div>
+            </div>
+            <div class="heatmap-matrix"></div>
+          </div>
+        </section>
+
+        <!-- 4. APP USAGE ANALYTICS -->
+        <section id="view-appusage" class="page-view">
+          <div class="page-header">
+            <div class="header-title-group">
+              <h1>App Usage & Session Analytics</h1>
+              <p>Track application open frequencies and session durations.</p>
+            </div>
+          </div>
+
+          <div class="charts-grid-2">
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Average Session Duration</h3>
+                  <p>Minutes spent per app launch</p>
+                </div>
+              </div>
+              <div id="appSessionDurationChart" class="chart-container"></div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>AI Usage Insights</h3>
+                  <p>Behavioral anomalies detected by AI</p>
+                </div>
+              </div>
+              <ul style="display:flex; flex-direction:column; gap:14px; list-style:none; padding:10px 0;">
+                <li style="display:flex; gap:12px; align-items:center;">
+                  <i data-lucide="alert-circle" style="color:var(--accent-rose);"></i>
+                  <span>Instagram usage increased 21% after 11 PM this week.</span>
+                </li>
+                <li style="display:flex; gap:12px; align-items:center;">
+                  <i data-lucide="clock" style="color:var(--accent-amber);"></i>
+                  <span>Gaming users spend an avg of 2.4 hours after midnight.</span>
+                </li>
+                <li style="display:flex; gap:12px; align-items:center;">
+                  <i data-lucide="trending-down" style="color:var(--accent-cyan);"></i>
+                  <span>Productivity app usage decreased by 13% on weekends.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. SLEEP ANALYTICS -->
+        <section id="view-sleep" class="page-view">
+          <div class="page-header">
+            <div class="header-title-group">
+              <h1>Sleep & Rest Telemetry</h1>
+              <p>Correlate late night screen activity with sleep debt and quality.</p>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Late Night Phone Screen vs Sleep Duration</h3>
+                <p>Inverse relationship between late-night usage and rest quality</p>
+              </div>
+            </div>
+            <div id="sleepCorrelationChart" class="chart-container"></div>
+          </div>
+        </section>
+
+        <!-- 6. UNLOCK ANALYTICS -->
+        <section id="view-unlocks" class="page-view">
+          <div class="page-header">
+            <div class="header-title-group">
+              <h1>Device Unlock Analytics</h1>
+              <p>Frequency, compulsive checks, and hourly phone unlock patterns.</p>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Hourly Unlock Heatmap (00:00 - 23:00)</h3>
+                <p>High unlock frequency triggers distraction warnings</p>
+              </div>
+            </div>
+            <div class="heatmap-matrix"></div>
+          </div>
+        </section>
+
+        <!-- 7. NOTIFICATION ANALYTICS -->
+        <section id="view-notifications" class="page-view">
+          <div class="page-header">
+            <div class="header-title-group">
+              <h1>Notification Interruption Analytics</h1>
+              <p>Analyze notification volume, app disruption metrics, and quiet hours compliance.</p>
+            </div>
+          </div>
+
+          <!-- Notification KPI Cards -->
+          <div class="kpi-grid" style="margin-bottom: 20px;">
+            <div class="glass-card kpi-card">
+              <span class="kpi-label">Total Notifications Today</span>
+              <span class="kpi-value" id="kpi-notif-total" style="color: var(--accent-cyan);">--</span>
+            </div>
+            <div class="glass-card kpi-card">
+              <span class="kpi-label">Avg Notifications / User</span>
+              <span class="kpi-value" id="kpi-notif-avg" style="color: var(--accent-indigo);">--</span>
+            </div>
+            <div class="glass-card kpi-card">
+              <span class="kpi-label">Top Disruption App</span>
+              <span class="kpi-value" style="color: var(--accent-purple);">Social Media</span>
+            </div>
+            <div class="glass-card kpi-card">
+              <span class="kpi-label">Quiet Hours Compliance</span>
+              <span class="kpi-value" style="color: var(--accent-emerald);">84%</span>
+            </div>
+          </div>
+
+          <div class="charts-grid-2">
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Notifications vs Screen Time Impact</h3>
+                  <p>Daily notification frequency compared with active device time</p>
+                </div>
+              </div>
+              <div id="notificationTrendChart" class="chart-container"></div>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Notification Volume by App Category</h3>
+                  <p>Category distribution of incoming interruptions</p>
+                </div>
+              </div>
+              <div id="notificationCategoryChart" class="chart-container"></div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- User Profile Modal -->
+  <div class="modal-overlay" id="userProfileModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Detailed User Analytics Profile</h3>
+        <button class="btn-icon-small" id="closeProfileModal"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" id="userProfileModalBody">
+        <!-- Populated via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript App Controller -->
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

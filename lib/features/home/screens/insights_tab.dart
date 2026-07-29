@@ -96,25 +96,44 @@ class InsightsTab extends ConsumerWidget {
   }
 
   List<String> _parsePoints(String text, String sectionName) {
-    final lines = text.split('\n');
+    final cleanText = text.replaceAll(RegExp(r'```json|```'), '').trim();
+    final lines = cleanText.split('\n');
     bool inSection = false;
     List<String> points = [];
 
     for (var line in lines) {
-      if (line.toLowerCase().contains(sectionName.toLowerCase())) {
+      final trimmed = line.trim();
+      if (trimmed.toLowerCase().contains(sectionName.toLowerCase())) {
         inSection = true;
         continue;
       }
-      if (inSection && (line.toLowerCase().contains('insights') || line.toLowerCase().contains('recommendations')) && !line.toLowerCase().contains(sectionName.toLowerCase())) {
+      if (inSection && (trimmed.toLowerCase().contains('insights') || trimmed.toLowerCase().contains('recommendations')) && !trimmed.toLowerCase().contains(sectionName.toLowerCase())) {
         break;
       }
       
       if (inSection) {
-        final match = RegExp(r'^\d+\.\s*(.*)').firstMatch(line.trim());
+        // Skip JSON formatting artifacts
+        if (trimmed == '{' || trimmed == '}' || trimmed == '},' || trimmed == '[' || trimmed == ']' || trimmed == '],' || trimmed.startsWith('```')) {
+          continue;
+        }
+
+        final match = RegExp(r'^(?:\d+\.|\*|-)\s*(.*)').firstMatch(trimmed);
         if (match != null) {
-          points.add(match.group(1)!);
-        } else if (line.trim().isNotEmpty && !line.trim().startsWith('*')) {
-           if (!line.contains(':')) points.add(line.trim());
+          String val = match.group(1)!
+              .replaceAll('"', '')
+              .replaceAll("'", '')
+              .trim();
+          if (val.isNotEmpty && val != '}' && val != '],') {
+            points.add(val);
+          }
+        } else if (trimmed.isNotEmpty && !trimmed.startsWith('*') && !trimmed.startsWith('{') && !trimmed.startsWith('}')) {
+          if (!trimmed.contains('":')) {
+            String val = trimmed
+                .replaceAll('"', '')
+                .replaceAll("'", '')
+                .trim();
+            if (val.length > 3) points.add(val);
+          }
         }
       }
     }

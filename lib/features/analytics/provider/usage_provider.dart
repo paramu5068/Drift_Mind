@@ -64,13 +64,22 @@ final focusScoreProvider = Provider<int>((ref) {
 final aiInsightsProvider = FutureProvider<String>((ref) async {
   ref.keepAlive();
   final gemini = ref.read(geminiServiceProvider);
-  final usage = ref.read(usageStatsProvider).value ?? [];
-  final sot = ref.read(totalScreenTimeProvider).value ?? Duration.zero;
-  final unlocks = ref.read(unlockCountProvider).value ?? 0;
-  final focus = ref.read(focusStatsProvider).value ?? {'focusScore': 100, 'interruptions': 0};
-  final sleep = ref.read(sleepStatsProvider).value;
+  final usageService = ref.read(usageServiceProvider);
 
-  if (usage.isEmpty && sot == Duration.zero) return "Analyzing your digital habits... Check back in a few minutes.";
+  final usage = await usageService.getDailyUsageStats();
+  Duration sot = await usageService.getTotalScreenTime();
+
+  if (sot == Duration.zero && usage.isNotEmpty) {
+    int totalMs = 0;
+    for (var u in usage) {
+      totalMs += u.totalTimeVisible.inMilliseconds;
+    }
+    sot = Duration(milliseconds: totalMs);
+  }
+
+  final unlocks = await usageService.getUnlockCount();
+  final focus = await usageService.getFocusStats();
+  final sleep = await usageService.getSleepStats();
 
   final topApps = usage.take(5).map((e) => {
     'name': e.appName,
