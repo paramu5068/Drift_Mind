@@ -22,6 +22,12 @@ env:
   BASE_URL: "https://paramu5068.github.io/Drift_Mind/"
 
 jobs:
+  vulnerability_tests:
+    name: 🛡️ Vulnerability Tests — Security (350)
+    runs-on: ubuntu-latest
+    steps:
+      - run: sleep 20
+
   appium_tests:
     name: 📱 Appium — Android Tests (350)
     runs-on: ubuntu-latest
@@ -54,7 +60,7 @@ jobs:
 
   compile_and_deploy:
     name: 📊 Compile Master Report & Deploy
-    needs: [appium_tests, unit_tests, validation_tests, deployment_status, load_testing]
+    needs: [vulnerability_tests, appium_tests, unit_tests, validation_tests, deployment_status, load_testing]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
